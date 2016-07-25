@@ -8,13 +8,14 @@ public class Options {
 	
 	// Animal
 	public static Option sizeOption = new Option(12);
-	public static Option initialEnergyOption = new Option(8);
-	public static Option populationSize = new Option(16*8);
+	public static Option initialEnergyOption = new Option(4);
+	public static Option animalPopulationSize = new Option(8*8);
 	public static Option linearFrictionOption = new Option(0.06); // 0.065 // 0.024
 	public static Option angularFrictionOption = new Option(0.09); // 0.25 // 0.08
 	
 	
 	// Plant
+	public static Option plantPopulationSize = new Option(8*8);
 	public static Option minFoodSize = new Option(2);
 	public static Option maxFoodSize = new Option(8);
 	public static Option minGrowthPercentage = new Option(0.01);
@@ -45,7 +46,10 @@ public class Options {
 	public static Option minOldAge = new Option(3000);
 	public static Option maxOldAge = new Option(4000);
 	public static Option oldAgeMutationRate = new Option(0.03);
+	public static Option matureAgeMutationRate = new Option(0.06);
 	public static Option nutritionMutationRate = new Option(0.03);
+	public static Option minMatureAge = new Option(0.1);
+	public static Option maxMatureAge = new Option(0.4);
 	
 	// MovementGene
 	public static double calculateForce(double maxVelocity, double friction){

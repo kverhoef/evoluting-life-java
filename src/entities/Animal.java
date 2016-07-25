@@ -11,17 +11,22 @@ import main.CostCalculator;
 import main.Main;
 import main.EventType;
 import main.Options;
+import main.Population;
 import sensors.Eyes;
 import sensors.FoodVector;
 import sensors.Targets;
+import util.Range;
 
 public class Animal extends Organism implements Comparable<Animal> {
 
 	public int turnLeft = 0;    // Left angle
-	public int turnRight = 0;    // Right angle
-	public int accelerate = 0;// Velocity accelerator
-	public int decelerate = 0; // Velocity suppressor
+	public int turnRight = 0;   // Right angle
+	public int accelerate = 0;	// Velocity accelerator
+	public int decelerate = 0; 	// Velocity suppressor
 	public int eat = 0; 
+	
+	public List<Organism> targets = new ArrayList<>();
+	
 	public double size;
 	public double consumed;
 	public double hunger;
@@ -35,6 +40,7 @@ public class Animal extends Organism implements Comparable<Animal> {
 	
 	public double linearForce;
 	public double angularForce;
+	private Population population;
 	
     private Brain brain;
 	private Map<String, Double> output;
@@ -61,11 +67,13 @@ public class Animal extends Organism implements Comparable<Animal> {
     	initialOutput.put("accelerate", 0d);
     	initialOutput.put("decelerate", 0d);
     	initialOutput.put("eat", 0d);
+    	initialOutput.put("mate", 0d);
     	return initialOutput;
     }
 
-	public Animal(Genome genome, Position position, World world) {
+	public Animal(Genome genome, Position position, World world, Population population) {
 		super(genome, position, world);
+		this.population = population;
 		
 		this.size = Options.sizeOption.get();
         this.initialEnergy = Options.initialEnergyOption.get();
@@ -116,6 +124,12 @@ public class Animal extends Organism implements Comparable<Animal> {
         inputs.add(visibleAnimal != null ? (viewDistance - visibleAnimal.distance) / viewDistance : 0);
         // food supply
         inputs.add(visibleAnimal != null ? visibleAnimal.organism != null ? animal.healthN() : 0 : 0);
+        
+        // eat signal
+        inputs.add(visibleAnimal != null ? visibleAnimal.organism != null ? animal.willEat() ? 1d : 0 : 0 : 0);
+        // mate signal
+        inputs.add(visibleAnimal != null ? visibleAnimal.organism != null ? animal.willMate() ? 1d : 0 : 0 : 0);
+
         // left
         inputs.add(visibleFood != null ? (fieldOfView / 2 + visibleFood.angle) / fieldOfView : 0);
         // right
@@ -172,8 +186,8 @@ public class Animal extends Organism implements Comparable<Animal> {
     }
 	
 	public void eat(Targets targets) {
-        if (this.output.get("eat") == null) return;
-
+        if (this.output.get("eat").equals(0)) return;
+   
         if (targets.plants.size() > 0){
         	eatOrganism(targets.plants.get(0).organism);
         } 
@@ -212,6 +226,100 @@ public class Animal extends Organism implements Comparable<Animal> {
         this.hunger += CostCalculator.rotate(angularAcceleration * getHealth());
         this.hunger += CostCalculator.accelerate(linearAcceleration * getHealth());
     }
+	
+    public boolean willEat() {
+        return this.output.get("eat") > 0;
+    }
+
+    public boolean willMate() {
+        return this.age > this.getMatureAge() * this.getOldAge() && this.output.get("mate") > 0;
+    }
+
+    public boolean mate() {
+        if (!this.willMate()) return false;
+
+        this.hunger += CostCalculator.mate(Options.initialEnergyOption.get());
+
+        return true;
+    }
+    
+//    public void mate(Targets targets) {
+//        if (!this.willMate()) return;
+//        if (targets.animals.size() > 0) matePartner((Animal) targets.animals.get(0).organism);
+//    }
+    
+    public void setCurrentTarget(Targets target) {
+        this.targets = new ArrayList<>();
+
+        if (target.plants.size() > 0) this.targets.add(target.plants.get(0).organism);
+        if (target.animals.size() > 0) this.targets.add(target.animals.get(0).organism);
+    }
+
+    public Position createNearPosition() {
+        Range range = new Range(-1, 1);
+        return new Position(
+        		this.position.x + this.getSize() * range.random(),
+        		this.position.y + this.getSize() * range.random(),
+        		Math.random() * Math.PI * 2
+        		);
+    }
+
+    public void matePartner(Animal partner) {
+        /*jshint validthis: true */
+        if (partner != null) return;
+
+        // Use formula for a circle to find food
+        double x2 = (this.position.x - partner.position.x); x2 *= x2;
+        double y2 = (this.position.y - partner.position.y); y2 *= y2;
+        double s2 = partner.getSize() + 2; s2 *= s2;
+
+        // If we are within the circle, mate it
+        if (x2 + y2 >= s2) {
+          return;
+        }
+
+        if (!partner.mate()) { 
+        	return;
+        }
+        this.mate();
+
+        // Can only reproduce when there is enough energy
+        // if ( this.life.health() < 0  ) return;
+
+        // Increase entities total eaten counter
+        List<Position> positions = new ArrayList<>();
+        positions.add(createNearPosition());
+        positions.add(createNearPosition());
+
+        List<Animal> children = this.produceChildren(partner, positions);
+        for (int i=0; i<children.size(); i++) {
+            this.population.addEntity(children.get(i));
+        }
+
+        Main.getInstance().broadcast(EventType.MATE, children.size());
+    }
+
+
+	
+    public List<Animal> produceChildren(Animal partner, List<Position> childPositions) {
+    	Genome parentGenomeA = this.genome;
+    	Genome parentGenomeB = partner.genome;
+    	List<Animal> children = new ArrayList<>();
+
+    	List<Genome> childrenGenomes = parentGenomeA.mate(parentGenomeB);
+        for (int i=0; i<2; i++) {
+        	Genome childGenome = childrenGenomes.get(i);
+            childGenome.mutate();
+
+            // Spawn a new entity from it
+            Position position = childPositions.get(i);
+            Animal newAnimal = new Animal(childGenome, position, world, this.population);
+            children.add(newAnimal);
+        }
+
+        return children;
+    }
+
       
     @Override
 	public double getHealth() {
@@ -224,6 +332,7 @@ public class Animal extends Organism implements Comparable<Animal> {
 
 		Targets targets = this.eyes.sense(plants, animals);
 
+		setCurrentTarget(targets);
         think(targets);
         eat(targets);
         move();
@@ -251,6 +360,7 @@ public class Animal extends Organism implements Comparable<Animal> {
 		keys.add("accelerate");
 		keys.add("decelerate");
 		keys.add("eat");
+		keys.add("mate");
 		
 		// TODO cant we loop through the input list?
 		

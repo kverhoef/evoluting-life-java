@@ -16,5 +16,10 @@ public class CostCalculator {
 		return ENERGY_COST * Math.abs(acceleration);
 	}
 	
+	public static double mate(double initialEnergy) {
+		return ENERGY_COST * 1000 * initialEnergy;
+	}
+
+	
 }
 			

@@ -11,6 +11,7 @@ import entities.Position;
 import entities.World;
 import evolution.RouletteWheelSelectionByRank;
 import genetics.Genome;
+import util.Range;
 
 public class Population {
 	
@@ -27,18 +28,21 @@ public class Population {
       for (int i = 0; i < populationSize.get(); i++) {
           Genome genome = createGenome();
           Position position = createRandomPosition();
-          Animal entity = new Animal(genome, position, world);
-          // this.entityCreated.notifyAsync(newAnimal);
-          this.entities.add(entity);
+          Animal entity = new Animal(genome, position, world, this);
+          addEntity(entity);
       }
 	}
     
     public Genome createGenome() {
-        return new Genome(12, 5);
+        return new Genome(14, 6);
     }
     
     public Position createRandomPosition() {
-    	return new Position(world.width * Math.random(), world.height * Math.random(), Math.random() * Math.PI * 2);
+        Range range = new Range(-0.8, 0.8);
+        Double x = world.width/2 + world.width/2 * range.random();
+        Double y = world.height/2 + world.height/2 * range.random();
+        
+    	return new Position(x, y, Math.random() * Math.PI * 2);
     }
     
 //    getState: function () {
@@ -92,33 +96,43 @@ public class Population {
 
           if (this.entities.size() <= populationSize.get() -2) {
         	  List<Animal> parents = selectParents();
-              produceChildren(parents);
+        	  
+              List<Position> positions = createRandomPositions(2);
+              List<Animal> children = parents.get(0).produceChildren(parents.get(1), positions);
+
+              for (int i=0; i<children.size(); i++) {
+                  addEntity(children.get(i));
+              }
+
           }   
-    }
+      }
       
-    public void produceChildren(List<Animal> parents) {
-	    List<Genome> children = parents.get(0).genome.mate(parents.get(1).genome);
-	    for (Genome child : children) {
-	        child.mutate();
-	
-	        // Spawn a new entity from it
-	        Position position = createRandomPosition();
-	        Animal newAnimal = new Animal( child, position, world );
-	        this.entities.add(newAnimal);
-	        Main.getInstance().broadcast(EventType.NEW_ANIMAL, newAnimal);
-	    }
-	}
-      
-    public List<Animal> selectParents() {
+      public void addEntity(Animal newAnimal) {
+	      this.entities.add( newAnimal );
+	      if (Main.getInstance() != null){ // TODO fix no null check
+	    	  Main.getInstance().broadcast(EventType.NEW_ANIMAL, newAnimal);
+	      }
+      }
+
+      public List<Position> createRandomPositions(int count) {
+    	  List<Position> positions = new ArrayList<>();
+
+          for (int i=0; i<count; i++) {
+              positions.add(createRandomPosition());
+          }
+          return positions;
+      }
+
+      public List<Animal> selectParents() {
 	    List<Animal> parents = new ArrayList<>();
 	    
 	    for (int i=0; i<2; i++) {
 	        Animal winningEntity = new RouletteWheelSelectionByRank().select(this.entities);
-	        parents.add(winningEntity);
-	    }
+	        	parents.add(winningEntity);
+	    	}
 	
-	    return parents;
-    }
+	    	return parents;
+      }
     
     
 }

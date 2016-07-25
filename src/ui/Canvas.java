@@ -5,22 +5,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import entities.Animal;
 import entities.Plant;
 import entities.Position;
-import entities.World;
-import genetics.Genome;
 import main.Event;
 import main.EventType;
 import main.FoodSupply;
-import main.Main;
 import main.Population;
 import sensors.Eyes;
 
@@ -48,7 +43,6 @@ public class Canvas extends JPanel implements Observer {
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, population.world.width, population.world.height);
 		
-		drawFieldOfView(population.winningEntity, g);
 		
 	    for (Plant plant : foodSupply.plants) {
 	    	drawPlant(plant, g);
@@ -56,8 +50,32 @@ public class Canvas extends JPanel implements Observer {
 	    
 	    for (Animal animal : population.entities) {
 	    	drawAnimal(animal, population.winningEntity, g);
+	    	if (animal.willMate()){
+	    		drawMateHalo(animal, g);
+	    	}
+	    	if (animal.willEat()){
+	    		drawEatHalo(animal, g);
+	    	}
 	    }
+	    
+	    if (population.winningEntity != null) {
+			drawFieldOfView(population.winningEntity, g);
+			drawTargetLines(population.winningEntity, g);
+		}
+	    
   	}
+	
+	public void drawTargetLines(Animal animal, Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+        Position p = animal.position;
+        g2.setStroke(new BasicStroke(1f));;
+        for (int i=0; i< animal.targets.size(); i++) {
+            Position t = animal.targets.get(i).position;
+
+            g2.setColor(Color.WHITE);
+            g2.drawLine(new Double(p.x).intValue(), new Double(p.y).intValue(), new Double(t.x).intValue(), new Double(t.y).intValue());
+        }
+    }
 	
 	public void drawFieldOfView (Animal animal, Graphics g) {
 		if (population.winningEntity != null) {
@@ -79,6 +97,56 @@ public class Canvas extends JPanel implements Observer {
         
 		}
     }
+	
+	public void drawMateHalo(Animal animal, Graphics g) {
+		double haloSize = animal.getSize() * 0.3;
+		Position p = animal.position;
+		double ba = p.a + Math.PI; // Find the angle 180deg of entity
+
+        double hX = p.x + ( Math.cos( ba ) * -1 * haloSize );
+        double hY = p.y + ( Math.sin( ba ) * -1 * haloSize );
+//        var highlight = context.createRadialGradient( hX, hY, 0, hX, hY, haloSize );
+//        highlight.addColorStop( 0, "rgba( 0, 100, 255, 1.0 )" );
+//        highlight.addColorStop( 1, "rgba( 0, 100,  255, 0.0 )" );
+//
+//        context.fillStyle = highlight;
+//        context.beginPath();
+//        context.arc( hX , hY, haloSize, 0, Math.PI*2, true );
+//        context.closePath();
+//        context.fill();
+        g.setColor(Color.RED);
+        g.fillOval(
+        		new Double(hX).intValue(), 
+				new Double(hY).intValue(), 
+				new Double(haloSize).intValue(), 
+				new Double(haloSize).intValue());
+    }
+
+    public void drawEatHalo (Animal animal, Graphics g) {
+        double haloSize = animal.getSize() * 0.4;
+        Position p = animal.position;
+        double ba = p.a + Math.PI; // Find the angle 180deg of entity
+
+        double hX = p.x + ( Math.cos( ba ) );
+        double hY = p.y + ( Math.sin( ba ) );
+//        var highlight = context.createRadialGradient( hX, hY, 0, hX, hY, haloSize );
+//        highlight.addColorStop( 0, "rgba( 255, 255, 255, 1.0 )" );
+//        highlight.addColorStop( 1, "rgba( 255, 255, 255, 0.0 )" );
+
+//        context.fillStyle = highlight;
+//        context.beginPath();
+//        context.arc( hX , hY, haloSize, 0, Math.PI*2, true );
+//        context.closePath();
+//        context.fill();
+        g.setColor(Color.CYAN);
+        g.fillOval(
+        		new Double(hX).intValue(), 
+				new Double(hY).intValue(), 
+				new Double(haloSize).intValue(), 
+				new Double(haloSize).intValue());
+        
+    }
+
 	
 	public void drawAnimal(Animal animal, Animal bestAnimal, Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;

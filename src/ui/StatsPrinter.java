@@ -16,6 +16,7 @@ public class StatsPrinter implements Observer {
 	private int totalConsumed;
 	private int totalWandered;
 	private int totalDiedOfAge;
+	private int totalMatings;
 	private double avgHealth;
 	private FoodSupply foodSupply;
 	private Population population;
@@ -44,6 +45,9 @@ public class StatsPrinter implements Observer {
 		else if (event.type.equals(EventType.DIED_OF_AGE)) {
 			totalDiedOfAge++;
 		}
+		else if (event.type.equals(EventType.MATE)) {
+			totalMatings++;
+		}
 		else if (event.type.equals(EventType.CYCLE_END)) {
 			if ((int)event.value % 100 == 0) {
 				collectStats();
@@ -67,6 +71,7 @@ public class StatsPrinter implements Observer {
 		
 		System.out.println(
 				"avg. health:\t" + df2.format(avgHealth) + "\t" +
+				"totalMatings:\t" + totalMatings + "\t" +
 				"totalConsumed:\t" + totalConsumed + "\t" +
 				"totalStarved:\t" + totalStarved + "\t" +
 				"totalWandered:\t" + totalWandered + "\t" +

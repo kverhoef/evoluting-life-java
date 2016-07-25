@@ -15,6 +15,10 @@ public abstract class Organism {
 	public abstract double getSize();
 	public abstract double consume();
 	
+    public double getMatureAge() {
+		return genome.life.matureAge;
+	}
+	
 	public double getOldAge() {
 		return genome.life.oldAge;
 	}
