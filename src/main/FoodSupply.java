@@ -15,13 +15,10 @@ public class FoodSupply {
 	private double maxX;
 	private double minY;
 	private double maxY;
-	private double border= 20;
+	private double border = 20;
 	private World world;
 	
-	public Option populationSize = new Option(10*8);
-	
 	public List<Plant> plants = new ArrayList<>();
-	
 	
 	public FoodSupply(World world){
 		this.world = world;
@@ -31,7 +28,7 @@ public class FoodSupply {
 		this.minY = border;
 		this.maxY = world.height - border;
 		
-		for (int i = 0; i < populationSize.get(); i++) {
+		for (int i = 0; i < Options.plantPopulationSize.get(); i++) {
             this.plants.add(createPlant());
         }
 //      this.entityRunNotifier = new Subject();
@@ -48,12 +45,10 @@ public class FoodSupply {
 
             // Replace the food if it's exhausted
             if (!plant.lives()) {
-//            	System.out.println("Dead plant");
                 plant = this.plants.set(i, createPlant());
             }
 
             plant.run();
-//            this.entityRunNotifier.notify(plant);
         }
     }
 	

@@ -1,5 +1,12 @@
 package main;
 
 public enum EventType {
-	CYCLE_END, WANDERED, STARVED, CONSUMED, DIED_OF_AGE, EAT, NEW_ANIMAL, MATE;
+	CYCLE_END, 
+	WANDERED, 
+	STARVED, 
+	CONSUMED,
+	DIED_OF_AGE, 
+	EAT, 
+	NEW_ANIMAL, 
+	MATE;
 }

@@ -8,13 +8,13 @@ public class Options {
 	
 	// Animal
 	public static Option sizeOption = new Option(12);
-	public static Option animalPopulationSize = new Option(8*8);
+	public static Option animalPopulationSize = new Option(16*8);
 	public static Option linearFrictionOption = new Option(0.06); // 0.065 // 0.024
 	public static Option angularFrictionOption = new Option(0.09); // 0.25 // 0.08
 	
 	
 	// Plant
-	public static Option plantPopulationSize = new Option(8*8);
+	public static Option plantPopulationSize = new Option(10*8);
 	public static Option minFoodSize = new Option(2);
 	public static Option maxFoodSize = new Option(8);
 	public static Option minGrowthPercentage = new Option(0.01);
