@@ -17,37 +17,10 @@ public class Main extends Observable {
 	}
 
 	private Main() {
-//	
+
 		this.world = new World();
         this.foodSupply = new FoodSupply(world);
         this.population = new Population(world);
-
-//        // Import & Export of genes
-//        var contentPersister = new ContentPersister(function () {
-//          return population.getState();
-//        });
-//
-//        var contentLoader = new ContentLoader(function (genomeStates) {
-//          population.loadState(genomeStates);
-//        });
-
-//        var statsTable = document.getElementById('stats-tbody');
-//        var statsCollector = new StatsCollector(getIteration, getPopulationNumbers);
-//        var statsPrinter = new StatsPrinter(statsTable, statsCollector);
-
-//        var graphElement = document.getElementById('graph');
-//        var fitnessGraph = new FitnessGraph(graphElement, getPopulationNumbers);
-//
-//        var countersElement = document.getElementById('time');
-//        var countersCollector = new CountersCollector(getIteration, getPopulationNumbers);
-//        var countersPrinter = new CountersPrinter(countersElement, countersCollector);
-
-//        var diagramElement = document.getElementById('diagram');
-//        var brainDiagram = new BrainDiagram(diagramElement);
-//        population.newWinnerNotifier.addObserver(brainDiagram.newWinnerObserver);
-
-//        var statsIntervalId = statsPrinter.periodicalReport();
-//        var graphIntervalId = fitnessGraph.periodicalReport();
 
 	}
 	
@@ -55,13 +28,17 @@ public class Main extends Observable {
 	
 	public void startMainLoop(){
 		
+		long sleepTime = (long) Options.mainLoopSleep.get();
+		
 		while (true){
 			mainLoop();
-			try {
-				Thread.sleep(1000/60);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (sleepTime > 0){
+				try {
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

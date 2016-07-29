@@ -2,6 +2,8 @@ package main;
 
 public class Options {
 
+	public static Option mainLoopSleep = new Option(1000/60);
+	
 	public static Option mutationFraction = new Option(0.005);
 	public static Option minThreshold = new Option(0.1);
 	public static Option maxThreshold = new Option(1.0);
