@@ -29,7 +29,7 @@ public class AxonGene extends Gene {
         if (Math.random() <= Options.strengthMutationRate.get()) {
           Range range = new Range(0, Options.maxStrength.get());
           this.strength += range.mutation(Options.mutationFraction.get());
-          this.strength = range.check(this.strength);
+//          this.strength = range.checkLower(this.strength);
         }
 
         if (Math.random() <= Options.strengtheningMutationRate.get()) {

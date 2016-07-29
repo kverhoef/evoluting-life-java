@@ -44,33 +44,8 @@ public class Population {
         
     	return new Position(x, y, Math.random() * Math.PI * 2);
     }
-    
-//    getState: function () {
-//          sortSuccess.call(this);
-//          var genomeStates = [];
-//
-//          for (var i = 0; i < this.entities.length; i++) {
-//              var genome = this.entities[i].getGenome();
-//              genomeStates.push(genome.getState());
-//          }
-//
-//          return {genomes: genomeStates};
-//      },
 
-//      loadState: function (genomeStates) {
-//          this.entities = [];
-//          var genomes = genomeStates.genomes;
-//
-//          for (var i = 0; i < genomes.length; i++) {
-//              var genome = new Genome(undefined, undefined, genomes[i]);
-//              var position = createRandomPosition();
-//              var entity = new Animal(genome, position);
-//              entity.population = this;
-//              this.entities.push( entity );
-//          }
-//      },
-
-      public void run(List<Plant> plants) {
+    public void run(List<Plant> plants) {
 
     	  Collections.sort(this.entities);
 
@@ -105,14 +80,14 @@ public class Population {
               }
 
           }   
-      }
+    }
       
-      public void addEntity(Animal newAnimal) {
+    public void addEntity(Animal newAnimal) {
 	      this.entities.add( newAnimal );
 	      if (Main.getInstance() != null){ // TODO fix no null check
 	    	  Main.getInstance().broadcast(EventType.NEW_ANIMAL, newAnimal);
 	      }
-      }
+    }
 
       public List<Position> createRandomPositions(int count) {
     	  List<Position> positions = new ArrayList<>();

@@ -28,11 +28,9 @@ public class Animal extends Organism implements Comparable<Animal> {
 	public List<Organism> targets = new ArrayList<>();
 	
 	public double size;
-	public double consumed;
 	public double gainedEnergy;
 	public double lostEnergy;
 	public double usedEnergy;
-	public double hunger;
 	public Eyes eyes;
 	
 	public double initialEnergy;
@@ -55,14 +53,16 @@ public class Animal extends Organism implements Comparable<Animal> {
     
     @Override
     public double consume() {
-        double size = getHealth();
-        hunger++;
-        // static value until nutricion becomes available
+        this.lostEnergy++;
+
         Main.getInstance().broadcast(EventType.CONSUMED, 1);
-        
-        return size < 0 ? 0 : size < 1 ? size : 1;
+        return getHealth() < 0 ? 0 : getHealth() < 1 ? getHealth() : 1;
     }
     
+    public double netEnergy() {
+        return this.gainedEnergy - this.usedEnergy - this.lostEnergy;
+    }
+
     public Map<String, Double> getInitialOutput(){
     	Map<String, Double> initialOutput = new HashMap<>();
     	initialOutput.put("turnLeft", 0d);
@@ -96,8 +96,8 @@ public class Animal extends Organism implements Comparable<Animal> {
 
         this.output = getInitialOutput();
 
-        this.consumed = 0;   // Food eaten
-        this.hunger = 0;
+//        this.consumed = 0;   // Food eaten
+//        this.hunger = 0;
         this.gainedEnergy = 0;   // Gained energy
         this.usedEnergy = 0; 	// Used energy
         this.lostEnergy = 0; 	// Lost energy
@@ -180,7 +180,7 @@ public class Animal extends Organism implements Comparable<Animal> {
         
         // Increase entities total eaten counter
         double consumed = organism.consume();
-        this.consumed += consumed;
+        this.gainedEnergy += consumed;
 
         // Increment global eaten counter
         Main.getInstance().broadcast(EventType.EAT, consumed);
@@ -224,8 +224,8 @@ public class Animal extends Organism implements Comparable<Animal> {
         p.y += dy;
         
         // Register the cost of the forces applied for acceleration
-        this.hunger += CostCalculator.rotate(angularAcceleration * getHealth());
-        this.hunger += CostCalculator.accelerate(linearAcceleration * getHealth());
+        this.usedEnergy += CostCalculator.rotate(angularAcceleration * getHealth());
+        this.usedEnergy += CostCalculator.accelerate(linearAcceleration * getHealth());
     }
 	
     public boolean willEat() {
@@ -238,8 +238,8 @@ public class Animal extends Organism implements Comparable<Animal> {
 
     public boolean mate() {
         if (!this.willMate()) return false;
-
-        this.hunger += CostCalculator.mate(this.initialEnergy);
+        
+        this.usedEnergy += CostCalculator.mate(this.initialEnergy);
 
         return true;
     }
@@ -324,11 +324,11 @@ public class Animal extends Organism implements Comparable<Animal> {
       
     @Override
 	public double getHealth() {
-        return this.initialEnergy + this.consumed - this.hunger;
+        return this.initialEnergy + this.netEnergy();
 	}
     
 	public Double getScore() {
-		return this.consumed - this.hunger;
+		return netEnergy();
 	}
 
 	public void run(List<Plant>plants, List<Animal> animals){
@@ -343,7 +343,7 @@ public class Animal extends Organism implements Comparable<Animal> {
         move();
 
         // Register the cost of the cycle
-        this.hunger += CostCalculator.cycle();
+        this.lostEnergy += CostCalculator.cycle();
 	}
 	
 	public void think(Targets targets) {

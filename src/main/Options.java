@@ -36,7 +36,7 @@ public class Options {
 	// BrainGene
 	public static Option minHiddenLayers = new Option(1);
 	public static Option maxHiddenLayers = new Option(5);
-	public static Option maxNeuronsPerLayer = new Option(16);
+	public static Option maxNeuronsPerLayer = new Option(18);
 	public static Option layerMutationRate = new Option(0.01);    // adding or removing a gene
 	public static Option geneMutationRate = new Option(0.05);    // percentual chance of genes within a genome to mutate
 	public static Option geneReplacementRate = new Option(0.001);  // completely replacing a genes properties
@@ -44,9 +44,9 @@ public class Options {
 	// LifeGene
 	public static Option minOldAge = new Option(3000);
 	public static Option maxOldAge = new Option(4000);
-	public static Option oldAgeMutationRate = new Option(0.03);
+	public static Option oldAgeMutationRate = new Option(0.06);
 	public static Option matureAgeMutationRate = new Option(0.06);
-	public static Option nutritionMutationRate = new Option(0.03);
+	public static Option nutritionMutationRate = new Option(0.06);
 	public static Option minMatureAge = new Option(0.1);
 	public static Option maxMatureAge = new Option(0.4);
 	public static Option minInitialEnergy = new Option(1);
