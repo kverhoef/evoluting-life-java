@@ -16,7 +16,7 @@ public class RouletteWheelSelectionByRank {
             long occurence = scoreCount - i - 1;
             long occurenceSum = occurence * (occurence+1) / 2;
 
-            if (randomOccurenceSum > occurenceSum){
+            if (randomOccurenceSum > occurenceSum) {
             	return entities.get(i);
             }
         }

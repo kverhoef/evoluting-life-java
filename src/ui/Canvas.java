@@ -169,18 +169,13 @@ public class Canvas extends JPanel implements Observer {
         double cy = Math.sin( ba ) * entitySize * 0.3;
 
         // Color code entity based on food eaten compared to most successful
-        double currentBest = bestAnimal.rank();
-        int green = (int) Math.floor( 0.7 * 255 * (1 - (currentBest == 0 ? 0 : animal.rank() / currentBest )));
-
+        double currentBestScore = getAbsoluteScore(bestAnimal);
+        int green = (int) Math.floor(255 * (1 - (currentBestScore == 0 ? 0 : getAbsoluteScore(animal) / currentBestScore )));
+        
         Color color = new Color(255, green>0?green:0, 0);
         g2.setColor(color);
         
         g2.setStroke(new BasicStroke((float) (2 + Math.floor(animal.age / (animal.getOldAge() / 5)))));
-        
-//        g2.setColor(Color.RED);
-//		if (bestAnimal == animal) {
-//			g2.setColor(Color.cyan);
-//		}
         
         // Draw the triangle
         
@@ -194,6 +189,10 @@ public class Canvas extends JPanel implements Observer {
         g2.setColor(Color.BLACK);
         g2.draw(polygon);
 
+    }
+	
+	public double getAbsoluteScore(Animal animal) {
+        return animal.getScore() < 0 ? 0 : animal.getScore();
     }
 	
 	public void drawPlant(Plant plant, Graphics g) {

@@ -29,6 +29,9 @@ public class Animal extends Organism implements Comparable<Animal> {
 	
 	public double size;
 	public double consumed;
+	public double gainedEnergy;
+	public double lostEnergy;
+	public double usedEnergy;
 	public double hunger;
 	public Eyes eyes;
 	
@@ -76,7 +79,7 @@ public class Animal extends Organism implements Comparable<Animal> {
 		this.population = population;
 		
 		this.size = Options.sizeOption.get();
-        this.initialEnergy = Options.initialEnergyOption.get();
+        this.initialEnergy = genome.life.initialEnergy;
 
         this.angularFriction = Options.angularFrictionOption.get();
         this.linearFriction = Options.linearFrictionOption.get();
@@ -93,14 +96,12 @@ public class Animal extends Organism implements Comparable<Animal> {
 
         this.output = getInitialOutput();
 
-        this.consumed = Options.initialEnergyOption.get();   // Food eaten
+        this.consumed = 0;   // Food eaten
         this.hunger = 0;
+        this.gainedEnergy = 0;   // Gained energy
+        this.usedEnergy = 0; 	// Used energy
+        this.lostEnergy = 0; 	// Lost energy
 	}
-	
-	public Double rank() { 
-        return this.getHealth();
-    }
-
 	
 	public double healthN() {
         double health = this.getHealth();
@@ -238,7 +239,7 @@ public class Animal extends Organism implements Comparable<Animal> {
     public boolean mate() {
         if (!this.willMate()) return false;
 
-        this.hunger += CostCalculator.mate(Options.initialEnergyOption.get());
+        this.hunger += CostCalculator.mate(this.initialEnergy);
 
         return true;
     }
@@ -323,9 +324,13 @@ public class Animal extends Organism implements Comparable<Animal> {
       
     @Override
 	public double getHealth() {
-		return this.consumed - this.hunger;
+        return this.initialEnergy + this.consumed - this.hunger;
 	}
     
+	public Double getScore() {
+		return this.consumed - this.hunger;
+	}
+
 	public void run(List<Plant>plants, List<Animal> animals){
 		
 		this.age++;
@@ -373,7 +378,7 @@ public class Animal extends Organism implements Comparable<Animal> {
 
 	@Override
 	public int compareTo(Animal otherAnimal) {
-		return otherAnimal.rank().compareTo(this.rank());
+		return otherAnimal.getScore().compareTo(this.getScore());
 	}
 
 }

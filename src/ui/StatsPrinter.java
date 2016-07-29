@@ -76,7 +76,7 @@ public class StatsPrinter implements Observer {
 				"totalStarved:\t" + totalStarved + "\t" +
 				"totalWandered:\t" + totalWandered + "\t" +
 				"totalDiedOfAge:\t" + totalDiedOfAge + "\t" +
-				"best:\t" + df3.format(population.winningEntity.rank()) + "\t" 
+				"best:\t" + df3.format(population.winningEntity.getScore()) + "\t" 
 				);
 	}
 	

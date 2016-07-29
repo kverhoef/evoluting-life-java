@@ -27,15 +27,21 @@ public class AxonGene extends Gene {
     public void mutate() {
 
         if (Math.random() <= Options.strengthMutationRate.get()) {
-          this.strength += new Range(-1 * Options.maxStrength.get(), Options.maxStrength.get()).mutation(Options.mutationFraction.get());
+          Range range = new Range(0, Options.maxStrength.get());
+          this.strength += range.mutation(Options.mutationFraction.get());
+          this.strength = range.check(this.strength);
         }
 
         if (Math.random() <= Options.strengtheningMutationRate.get()) {
-          this.strengthening += new Range(Options.minStrengthening.get(), Options.maxStrengthening.get()).mutation(Options.mutationFraction.get());
+        	Range range = new Range(Options.minStrengthening.get(), Options.maxStrengthening.get());
+            this.strengthening += range.mutation(Options.mutationFraction.get());
+            this.strengthening = range.check(this.strengthening);
         }
 
         if (Math.random() <= Options.weakeningMutationRate.get()) {
-          this.weakening += new Range(Options.minWeakening.get(), Options.maxWeakening.get()).mutation(Options.mutationFraction.get());
+        	Range range = new Range(Options.minWeakening.get(), Options.maxWeakening.get());
+            this.weakening += range.mutation(Options.mutationFraction.get());
+            this.weakening = range.check(this.weakening);
         }
     }
 

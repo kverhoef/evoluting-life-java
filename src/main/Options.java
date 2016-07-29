@@ -8,7 +8,6 @@ public class Options {
 	
 	// Animal
 	public static Option sizeOption = new Option(12);
-	public static Option initialEnergyOption = new Option(4);
 	public static Option animalPopulationSize = new Option(8*8);
 	public static Option linearFrictionOption = new Option(0.06); // 0.065 // 0.024
 	public static Option angularFrictionOption = new Option(0.09); // 0.25 // 0.08
@@ -50,7 +49,10 @@ public class Options {
 	public static Option nutritionMutationRate = new Option(0.03);
 	public static Option minMatureAge = new Option(0.1);
 	public static Option maxMatureAge = new Option(0.4);
-	
+	public static Option minInitialEnergy = new Option(1);
+	public static Option maxInitialEnergy = new Option(9);
+	public static Option initialEnergyMutationRate = new Option(0.06);
+    
 	// MovementGene
 	public static double calculateForce(double maxVelocity, double friction){
         return maxVelocity * friction;
